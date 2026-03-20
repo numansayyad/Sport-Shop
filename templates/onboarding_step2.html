@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .onboarding-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .onboarding-card {
+    background: white;
+    padding: 50px;
+    border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+  }
+  .onboarding-card h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 28px;
+  }
+  .onboarding-card p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 16px;
+  }
+  .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+  }
+  .form-group input:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40,167,69,0.1);
+  }
+  .btn-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    max-width: 200px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(40,167,69,0.4);
+  }
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+  }
+  .btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+  }
+  .progress-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+  .step-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ddd;
+  }
+  .step-dot.active {
+    background: #28a745;
+    transform: scale(1.2);
+  }
+  @media (max-width: 768px) {
+    .onboarding-card {
+      padding: 30px 20px;
+    }
+    .btn-group {
+      flex-direction: column;
+    }
+  }
+</style>
+<div class="onboarding-container">
+  <div class="onboarding-card">
+    <div class="progress-indicator">
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+    </div>
+    <h2>📝 Complete Your Details</h2>
+    <p>Help us personalize your experience</p>
+    <form method="POST">
+      <div class="form-group">
+        <label>Age</label>
+        <input type="number" name="age" placeholder="Enter your age" min="13" max="120">
+      </div>
+      <div class="form-group">
+        <label>Date of Birth</label>
+        <input type="date" name="dob" max="{{ '1990-01-01' }}">
+      </div>
+      <div class="btn-group">
+        <button type="submit" class="btn btn-primary">✅ Save Details</button>
+        <a href="{{ url_for('products_bp.list_products') }}" class="btn btn-secondary">⏭️ Skip</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

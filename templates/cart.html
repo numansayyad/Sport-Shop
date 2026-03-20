@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .cart-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .cart-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #27bb25;
+    font-size: 28px;
+  }
+
+  /* Cart Item */
+  .cart-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+  }
+  .cart-item:hover {
+    transform: translateY(-3px);
+  }
+
+  .cart-item img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .cart-item h4 {
+    margin: 0 0 6px 0;
+    color: #333;
+    font-size: 20px;
+  }
+
+  .cart-item p {
+    margin: 4px 0;
+    color: #555;
+    font-size: 15px;
+  }
+
+  /* Form and Buttons */
+  .cart-item form {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .cart-item label {
+    font-size: 14px;
+    color: #333;
+  }
+  .cart-item input[type="number"] {
+    width: 70px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+  .cart-item button {
+    padding: 6px 12px;
+    background: #27bb25;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .cart-item button:hover {
+    background: #1fa71a;
+    transform: scale(1.05);
+  }
+
+  .cart-item a {
+    display: inline-block;
+    margin-top: 10px;
+    text-decoration: none;
+    color: white;
+    background: #e74c3c;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .cart-item a:hover {
+    background: #c0392b;
+    transform: scale(1.05);
+  }
+
+  /* Cart Summary */
+  .cart-summary {
+    text-align: right;
+    margin-top: 25px;
+  }
+  .cart-summary h3 {
+    font-size: 22px;
+    color: #27bb25;
+  }
+  .cart-summary a {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 12px 25px;
+    background: #27bb25;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .cart-summary a:hover {
+    background: #1fa71a;
+    transform: scale(1.05);
+  }
+
+  /* ---------- Responsive ---------- */
+  /* Tablet view (≤1024px) */
+  @media (max-width: 1024px) {
+    .cart-container {
+      padding: 20px;
+    }
+    .cart-item img {
+      width: 120px;
+      height: 120px;
+    }
+    .cart-item h4 {
+      font-size: 18px;
+    }
+  }
+
+  /* Mobile view (≤600px) */
+  @media (max-width: 600px) {
+    .cart-container {
+      margin: 20px 10px;
+      padding: 15px;
+    }
+    .cart-item {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .cart-item img {
+      width: 100%;
+      max-height: 200px;
+    }
+    .cart-item form {
+      justify-content: center;
+    }
+    .cart-item a {
+      width: 100%;
+      text-align: center;
+    }
+    .cart-summary {
+      text-align: center;
+    }
+    .cart-summary a {
+      width: 100%;
+      text-align: center;
+      font-size: 20px;
+      padding: 4px;
+    }
+  }
+</style>
+
+<div class="cart-container">
+  <h2>🛒 My Cart</h2>
+
+  {% if cart_items %}
+    {% for item in cart_items %}
+      <div class="cart-item">
+        {% if item.main_image %}
+          <img src="{{ url_for('static', filename='uploads/' ~ item.main_image.split('/')[-1]) }}" alt="{{ item.product_name }}">
+        {% endif %}
+
+        <div>
+          <h4>{{ item.product_name }}</h4>
+          <p>Price per Unit: ₹{{ item.price }}</p>
+          <p>Quantity: {{ item.quantity }}</p>
+          <p>Total: ₹{{ item.total }}</p>
+
+          <form method="POST" action="{{ url_for('cart_bp.update_cart', cart_id=item._id) }}">
+            <label for="quantity-{{ item._id }}">Update Quantity:</label>
+            <input type="number" name="quantity" id="quantity-{{ item._id }}" min="1" value="{{ item.quantity }}">
+            <button type="submit">Update</button>
+          </form>
+
+          <a href="{{ url_for('cart_bp.remove_from_cart', cart_id=item._id) }}" onclick="return confirm('Remove this item?')">Remove</a>
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="cart-summary">
+      <h3>Total Amount: ₹{{ total_amount }}</h3>
+      <a href="{{ url_for('cart_bp.checkout') }}">Proceed to Checkout</a>
+    </div>
+  {% else %}
+    <p style="text-align:center;">Your cart is empty.</p>
+  {% endif %}
+</div>
+{% endblock %}

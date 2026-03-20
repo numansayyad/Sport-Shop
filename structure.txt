@@ -1,0 +1,29 @@
+movie_ticket_booking/
+│── app.py                  # Main Flask app
+│── extensions.py            # DB initialization
+│── models.py                # Database models
+│── requirements.txt
+│
+├── templates/               # HTML templates (Jinja2)
+│   ├── base.html
+│   ├── index.html           # Homepage (list movies)
+│   ├── login.html
+│   ├── register.html
+│   ├── movies.html          # Show movies
+│   ├── booking.html         # Seat selection + booking
+│   ├── my_bookings.html     # User bookings
+│   └── admin.html           # Admin dashboard
+│
+├── static/                  # CSS, JS, Images
+│   ├── css/
+│   ├── js/
+│   └── images/
+│
+├── routes/
+│   ├── auth.py              # Login, Register
+│   ├── movies.py            # Movies listing
+│   ├── booking.py           # Ticket booking
+│   └── admin.py             # Admin routes
+│
+└── instance/
+    └── movie_db.sqlite      # SQLite database (ignored in git)

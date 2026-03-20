@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sai Sports Shop</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Custom Styles -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      /* background: url("https://res.cloudinary.com/purnesh/image/upload/f_auto/v1617253512/11617253510926.jpg") no-repeat center center/cover; */
+    }
+
+    header {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    /* Logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo img {
+      height: 45px;
+      width: 45px;
+      border-radius: 50%;
+    }
+    .logo span {
+      font-size: 20px;
+      font-weight: bold;
+      color: #f9f9f9;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 5px;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: 0.3s;
+      font-size: 14px;
+    }
+    nav a:hover {
+      background: #ff5722;
+      color: #fff;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 95%;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .flash-messages {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 20px;
+    }
+    .flash-messages li {
+      background: #ff5722;
+      color: #fff;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      font-size: 14px;
+      border-top: 3px solid #ff5722;
+    }
+    footer a {
+      color: #ff5722;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      header { flex-direction: column; align-items: flex-start; }
+      nav { width: 100%; justify-content: flex-start; margin-top: 10px; }
+      nav a { font-size: 13px; padding: 5px 10px; }
+    }
+    @media (max-width: 480px) {
+      .logo span { font-size: 18px; }
+      nav a { font-size: 12px; padding: 4px 8px; }
+      main { padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Logo">
+      <span>Sai Sports Shop</span>
+    </div>
+
+    <nav>
+      <a href="{{ url_for('home') }}"><i class="fa-solid fa-house"></i> Home</a>
+      <a href="{{ url_for('products_bp.list_products') }}"><i class="fas fa-futbol"></i> Products</a>
+      
+      {% if session.get('user_id') %}
+        <a href="{{ url_for('profile_bp.profile') }}"><i class="fa-solid fa-user"></i> Profile</a>
+        <a href="{{ url_for('cart_bp.view_cart') }}"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
+        <a href="{{ url_for('order_bp.my_orders') }}"><i class="fa-solid fa-box"></i> My Orders</a>
+        <a href="{{ url_for('auth_bp.logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      {% else %}
+        <a href="{{ url_for('auth_bp.login') }}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+        <a href="{{ url_for('auth_bp.register') }}"><i class="fa-solid fa-user-plus"></i> Register</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+    <ul class="flash-messages">
+          {% for message in messages %}
+            {% set msg_type, msg_content = message.split('|', 1) if '|' in message else ('info', message) %}
+            <li class="{{ msg_type }}" style="animation: slideDown 0.3s ease;">{{ msg_content }}</li>
+          {% endfor %}
+        </ul>
+
+        <style>
+          @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          
+          .welcome {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            font-size: 1.3rem !important;
+            font-weight: bold !important;
+            border: none !important;
+          }
+        </style>
+
+        {# OLD welcome code removed - JS handles it #}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}
+    <h2>Welcome to the Sports Shop 🏀</h2>
+    <p>
+      Your one-stop destination for all sports equipment, gear, and accessories.  
+      From footballs and cricket bats to fitness gear and shoes – we’ve got it all!
+    </p>
+    {% endblock %}
+  </main>
+
+  <footer>
+    <p>© 2025 Sai Sports Shop | All Rights Reserved</p>
+    <p>📍 Baramati | 📞 +91-9876543210 | 📧 <a href="mailto:sai@sportsshop.com">sai@sportsshop.com</a></p>
+  </footer>
+</body>
+</html>

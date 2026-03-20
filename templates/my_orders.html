@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .orders-container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .orders-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #27bb25;
+  }
+
+  .order-card {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 20px;
+    transition: transform 0.3s;
+    align-items: center;
+  }
+
+  .order-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .order-card img {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    border: 1px solid #ddd;
+  }
+
+  .order-info {
+    flex: 1;
+  }
+
+  .order-info h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 20px;
+  }
+
+  .order-info p {
+    margin: 4px 0;
+    color: #555;
+    font-size: 15px;
+  }
+
+  .order-info .actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .order-info .actions a {
+    flex: 1;
+    text-align: center;
+    padding: 8px 0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+
+  .order-info .actions .edit {
+    background: #3498db;
+  }
+  .order-info .actions .edit:hover {
+    background: #2980b9;
+    transform: scale(1.05);
+  }
+
+  .order-info .actions .delete {
+    background: #e74c3c;
+  }
+  .order-info .actions .delete:hover {
+    background: #c0392b;
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 650px) {
+    .order-card {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .order-card img {
+      width: 80%;
+      height: auto;
+    }
+    .order-info .actions {
+      flex-direction: column;
+    }
+    .order-info .actions a {
+      width: 100%;
+    }
+  }
+</style>
+
+<div class="orders-container">
+    <h2>🏀 My Sports Shop Orders</h2>
+
+    {% if orders %}
+        <div style="display:flex; flex-direction:column; gap:20px;">
+            {% for order in orders %}
+            <div class="order-card">
+                {% if order.main_image %}
+                <img src="{{ url_for('static', filename='uploads/' ~ order.main_image.split('/')[-1]) }}" alt="{{ order.product_name }}">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/default-product.jpg') }}" alt="No Image">
+                {% endif %}
+
+                <div class="order-info">
+                    <h4>{{ order.product_name }}</h4>
+                    <p><strong>Quantity:</strong> {{ order.quantity }}</p>
+                    <p><strong>Price per Unit:</strong> ₹{{ order.price }}</p>
+                    <p><strong>Total Amount:</strong> ₹{{ order.total_amount }}</p>
+                    <p><strong>Status:</strong> {{ order.status }}</p>
+                    <p><strong>Ordered On:</strong> {{ order.ordered_at.strftime('%d-%m-%Y %H:%M') }}</p>
+
+                    <div class="actions">
+                        <a href="{{ url_for('order_bp.delete_order', order_id=order._id) }}" class="delete" onclick="return confirm('Are you sure you want to delete this order?');">Delete</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="text-align:center;">You have no sports products orders yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

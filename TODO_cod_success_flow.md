@@ -1,0 +1,1 @@
+# TODO: Improve COD Order Success Flow\n1. [ ] Create TODO file.\n2. [ ] Update routes/orders.py for AJAX JSON response on COD.\n3. [ ] Add success modal + JS intercept to templates/review_order.html.\n4. [ ] Test full flow: review -> COD -> success screen -> auto redirect.\n5. [ ] Verify no flash, order/points correct.\n6. [ ] Complete task.

@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .order-container {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #f0f8f5;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+  }
+
+  .order-container h2 {
+    font-size: 28px;
+    color: #27bb25;
+    margin-bottom: 25px;
+  }
+
+  .order-container img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .order-container img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  }
+
+  .order-container p {
+    font-size: 16px;
+    color: #333;
+    margin: 8px 0;
+  }
+
+  .order-container label {
+    font-weight: bold;
+    display: block;
+    margin: 15px 0 5px 0;
+  }
+
+  .order-container input[type="number"] {
+    width: 60%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .order-container button {
+    padding: 14px 30px;
+    background: #27bb25;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+  }
+  .order-container button:hover {
+    background: #1fa71a;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .order-container {
+      padding: 20px;
+    }
+    .order-container h2 {
+      font-size: 24px;
+    }
+    .order-container img {
+      width: 250px;
+      height: 250px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .order-container {
+      margin: 20px 10px;
+      padding: 15px;
+    }
+    .order-container h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+    .order-container img {
+      width: 100%;
+      height: auto;
+      max-height: 250px;
+    }
+    .order-container p {
+      font-size: 14px;
+    }
+    .order-container input[type="number"] {
+      width: 90%;
+      font-size: 14px;
+      padding: 8px;
+    }
+    .order-container button {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+    }
+  }
+</style>
+
+<div class="order-container">
+  <h2>🛒 Place Order for {{ product.name }}</h2>
+
+  {% if product.main_image %}
+  <img src="{{ url_for('static', filename='uploads/' ~ product.main_image.split('/')[-1]) }}" alt="{{ product.name }}">
+  {% endif %}
+
+  <p><strong>Price per Unit:</strong> ₹{{ product.price }}</p>
+  <p><strong>Description:</strong> {{ product.description or '-' }}</p>
+  <p><strong>Available Stock:</strong> {{ product.get('stock_qty', 0) }}</p>
+
+  {% if product.get('stock_qty', 0) > 0 %}
+  <form method="POST">
+    <label for="quantity">Enter Quantity (Max {{ product.get('stock_qty', 0) }}):</label>
+    <input type="number" name="quantity" id="quantity" min="1" max="{{ product.get('stock_qty', 0) }}" value="1" required>
+
+    <button type="submit">Confirm Order</button>
+  </form>
+  {% else %}
+  <p style="color: #e74c3c; font-size: 24px; font-weight: bold; margin-top: 30px;">Stock Not Available</p>
+  {% endif %}
+</div>
+{% endblock %}

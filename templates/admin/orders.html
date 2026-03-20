@@ -1,0 +1,94 @@
+{% extends "admin/admin_base.html" %}
+{% block content %}
+<style>
+    body { font-family: Arial, sans-serif; background: #f9fafb; }
+    h2 { color: #10abb9; margin-bottom: 20px; }
+    .container { background: #ffffff; padding: 20px 25px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+    #searchBox { margin-bottom: 15px; padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 14px; }
+    table th, table td { border: 1px solid #dddddd; padding: 10px; vertical-align: middle; text-align: left; }
+    table thead { background-color: #10aeb9; color: white; } 
+    table tr:nth-child(even) { background-color: #f3f4f6; }
+    table tr:hover { background-color: #d1fae5; }
+    .btn { padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: background 0.3s; }
+    .btn-success { background-color: #10a0b9; color: #fff; }
+    .btn-success:hover { background-color: #058396; }
+    input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
+</style>
+
+<div class="container mt-4">
+    <h2>🛒 All Orders</h2>
+
+    <!-- Search Box -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <input type="text" id="searchBox" class="form-control" placeholder="Search by Username, Product, Order Date, Status, or Payment">
+        </div>
+    </div>
+
+    <form method="post" action="{{ url_for('admin_bp.update_order_status') }}">
+    <table class="table table-bordered table-striped" id="ordersTable">
+        <thead>
+            <tr>
+                <th>Sr. No</th>
+                <th>Order Date</th>
+                <th>Username</th>
+                <th>Phone no.</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price (₹)</th>
+                <th>Total Amount (₹)</th>
+                <th>Payment Method</th> <!-- New column -->
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ order.ordered_at.strftime('%d-%m-%Y %H:%M') if order.ordered_at else '-' }}</td>
+                <td>{{ order.username }}</td>
+                <td>{{ order.phone }}</td>
+                <td>{{ order.product_name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.total_amount }}</td>
+                <td>{{ order.payment_method if order.payment_method else '-' }}</td> <!-- Shows only actual payment method -->
+                <td class="text-center">
+                <!-- Hidden input to send the order ID -->
+                <input type="hidden" name="order_ids" value="{{ order._id }}">
+
+                <!-- Dropdown for status -->
+                <select name="status_{{ order._id }}" class="form-select">
+                    <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                    <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                </select>
+            </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="10" class="text-center">No orders found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-success mt-2">Update Order Status</button>
+    </form>
+</div>
+
+<script>
+    const searchBox = document.getElementById('searchBox');
+    const tableBody = document.getElementById('ordersTable').getElementsByTagName('tbody')[0];
+
+    searchBox.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        const rows = tableBody.getElementsByTagName('tr');
+        Array.from(rows).forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    });
+</script>
+{% endblock %}

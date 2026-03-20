@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+/* Container for menu under navbar aligned left */
+.menu-wrapper {
+  text-align: left;
+  margin: 15px;
+}
+
+/* Three Lines Button */
+.menu-toggle {
+  font-size: 26px;
+  cursor: pointer;
+  background: #e67e22;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+.menu-toggle:hover {
+  background: #ca6716;
+}
+
+/* Horizontal Category Menu */
+.category-menu {
+  display: none;
+  margin-top: 12px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.category-btn {
+  display: inline-block;
+  margin: 0 10px;
+  padding: 8px 16px;
+  background: #34495e;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: background 0.3s, transform 0.3s;
+}
+.category-btn:hover {
+  background: #1abc9c;
+  transform: scale(1.05);
+}
+
+/* Products Grid */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  justify-items: center;
+  margin-top: 20px;
+  padding: 0 10px;
+}
+
+/* Product Card */
+.product-card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+  width: 100%;
+  max-width: 250px;
+  font-family: "Trebuchet MS", sans-serif;
+}
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.2);
+}
+.product-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.view-details-btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 10px 18px;
+  background: #e67e22;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 15px;
+  transition: background 0.3s, transform 0.3s;
+}
+.view-details-btn:hover {
+  background: #ca6716;
+  transform: scale(1.08);
+}
+
+h2 {
+  margin: 25px 0;
+  text-align: center;
+  color: #e67e22;
+  font-size: 28px;
+  font-weight: bold;
+  font-family: "Trebuchet MS", sans-serif;
+}
+
+.no-products {
+  text-align: center;
+  grid-column: 1/-1;
+  color: #555;
+  font-size: 18px;
+  font-style: italic;
+}
+</style>
+
+<!-- Menu Button & Sports List -->
+<div class="menu-wrapper">
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+  <div id="categoryMenu" class="category-menu">
+    <span class="category-btn" onclick="filterProducts('all')">All Sports</span>
+    {% for category in categories %}
+      <span class="category-btn" onclick="filterProducts('{{ category }}')">{{ category|capitalize }}</span>
+    {% endfor %}
+  </div>
+</div>
+
+<h2>Available Sports Equipments</h2>
+
+<div class="products-grid" id="productsGrid">
+    {% if products|length == 0 %}
+      <p class="no-products">No sports equipments available at the moment. 🏀</p>
+    {% else %}
+      {% for product in products %}
+      <div class="product-card" data-category="{{ product.category }}">
+          {% if product.main_image %}
+          <img src="{{ url_for('static', filename='uploads/' ~ product.main_image.split('/')[-1]) }}" alt="Product">
+          {% else %}
+          <img src="{{ url_for('static', filename='images/default-product.jpg') }}" alt="No Image">
+          {% endif %}
+
+          <h3>{{ product.name }}</h3>
+          <p style="font-weight: bold; color: {% if product.get('stock_qty', 0) > 5 %}#27ae60{% elif product.get('stock_qty', 0) > 0 %}#f39c12{% else %}#e74c3c{% endif %};">Stock: {{ product.get('stock_qty', 0) }}</p>
+          <p><strong>₹{{ product.price or 'N/A' }}</strong></p>
+
+          <a href="{{ url_for('products_bp.product_details', product_id=product._id) }}" class="view-details-btn">
+              View Details
+          </a>
+      </div>
+      {% endfor %}
+    {% endif %}
+</div>
+
+<script>
+function toggleMenu() {
+  const menu = document.getElementById("categoryMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+function filterProducts(category) {
+  const products = document.querySelectorAll(".product-card");
+  let anyVisible = false;
+
+  products.forEach(product => {
+    if (category === "all" || product.dataset.category === category) {
+      product.style.display = "block";
+      anyVisible = true;
+    } else {
+      product.style.display = "none";
+    }
+  });
+
+  const grid = document.getElementById("productsGrid");
+  const noMessage = document.querySelector(".no-products");
+  if (!anyVisible) {
+    if (!noMessage) {
+      const p = document.createElement("p");
+      p.className = "no-products";
+      p.innerText = "No products available in this category.";
+      grid.appendChild(p);
+    }
+  } else {
+    if (noMessage) noMessage.remove();
+  }
+}
+</script>
+{% endblock %}

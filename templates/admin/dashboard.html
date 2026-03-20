@@ -1,0 +1,29 @@
+{% extends "admin/admin_base.html" %}
+{% block content %}
+
+
+<div class="dashboard-container">
+  <h2>📊 Admin Dashboard</h2>
+
+  <div class="stats">
+    <div class="stat-box">
+      <h3>{{ product_count }}</h3>
+      <p>Total Products</p>
+    </div>
+    <div class="stat-box">
+      <h3>{{ user_count }}</h3>
+      <p>Total Users</p>
+    </div>
+    <div class="stat-box">
+      <h3>{{ order_count }}</h3>
+      <p>Total Orders</p>
+    </div>
+  </div>
+
+  <div class="links">
+    <a href="{{ url_for('admin_bp.manage_products') }}">Manage Products</a>
+    <a href="{{ url_for('admin_bp.manage_users') }}">Manage Users</a>
+    <a href="{{ url_for('admin_bp.manage_orders') }}">View Orders</a>
+  </div>
+</div>
+{% endblock %}

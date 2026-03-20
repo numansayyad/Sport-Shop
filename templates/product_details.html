@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.product-details {
+  max-width: 1000px;
+  margin: 40px auto;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  font-family: 'Roboto', 'Segoe UI', sans-serif;
+  padding: 20px;
+}
+
+/* Top section: main image + info */
+.product-top {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+/* Left: Main Image */
+.product-image-container {
+  flex: 1 1 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Main Image */
+.product-image-container img#mainImage {
+  width: 100%;
+  max-height: 450px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #ddd;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.product-image-container img#mainImage:hover {
+  transform: scale(1.03);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+/* Thumbnails */
+.product-thumbnails {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 10px;
+}
+.product-thumbnails img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid #eee;
+  transition: transform 0.2s, border 0.2s;
+}
+.product-thumbnails img:hover {
+  transform: scale(1.1);
+  border: 2px solid #e67e22;
+}
+
+/* Right: Product Info */
+.product-info {
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.product-info h1 {
+  font-size: 28px;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+.product-info p {
+  font-size: 16px;
+  color: #34495e;
+  margin: 8px 0;
+}
+.product-info strong {
+  color: #e67e22;
+}
+
+/* Actions */
+.product-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.product-actions a {
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  color: white;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.product-actions .add-to-cart { background: #27ae60; }
+.product-actions .add-to-cart:hover { background: #1e8449; }
+.product-actions .buy-now { background: #e67e22; }
+.product-actions .buy-now:hover { background: #d35400; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-top { flex-direction: column; }
+  .product-image-container img#mainImage { max-height: 300px; }
+}
+@media (max-width: 480px) {
+  .product-image-container img#mainImage { max-height: 200px; }
+  .product-thumbnails img { width: 60px; height: 60px; }
+}
+</style>
+
+<div class="product-details">
+
+  <div class="product-top">
+    <!-- Left: Main Image + Thumbnails -->
+    <div class="product-image-container">
+      {% if product.main_image %}
+      <img id="mainImage" src="{{ url_for('static', filename='uploads/' ~ product.main_image.split('/')[-1]) }}" alt="{{ product.name }}">
+      {% else %}
+      <img id="mainImage" src="{{ url_for('static', filename='images/default-product.jpg') }}" alt="No Image">
+      {% endif %}
+
+      {% set all_images = [] %}
+      {% if product.main_image %}{% set _ = all_images.append(product.main_image) %}{% endif %}
+      {% for img in product.extra_images %}{% set _ = all_images.append(img) %}{% endfor %}
+
+      {% if all_images %}
+      <div class="product-thumbnails">
+        {% for img in all_images %}
+        <img src="{{ url_for('static', filename='uploads/' ~ img.split('/')[-1]) }}" alt="Image {{ loop.index }}" onclick="document.getElementById('mainImage').src=this.src">
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Right: Product Info -->
+    <div class="product-info">
+      <h1>{{ product.name }}</h1>
+      <p><strong>Price:</strong> ₹{{ product.price or '-' }}</p>
+      <p><strong>Description:</strong> {{ product.description or '-' }}</p>
+      <p><strong>Stock:</strong> {{ product.get('stock_qty', 0) if product.get('stock_qty', 0) else 'Out of Stock' }}</p>
+
+      {% if product.get('stock_qty', 0) > 0 %}
+      <!-- Actions -->
+      <div class="product-actions">
+        <a href="{{ url_for('cart_bp.add_to_cart', product_id=product._id) }}" class="add-to-cart">Add to Cart</a>
+        <a href="{{ url_for('order_bp.place_order', product_id=product._id) }}" class="buy-now">Buy Now</a>
+      </div>
+      {% else %}
+      <p style="color: #e74c3c; font-size: 20px; font-weight: bold; margin-top: 20px;">Stock Not Available</p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

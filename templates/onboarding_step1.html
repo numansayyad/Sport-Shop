@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .onboarding-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .onboarding-card {
+    background: white;
+    padding: 50px;
+    border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+  }
+  .onboarding-card h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 28px;
+  }
+  .onboarding-card p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 16px;
+  }
+  .upload-area {
+    border: 3px dashed #ddd;
+    border-radius: 16px;
+    padding: 40px 20px;
+    margin: 20px 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .upload-area:hover {
+    border-color: #28a745;
+    background: #f8f9fa;
+  }
+  .upload-area input[type=file] {
+    display: none;
+  }
+  .btn-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(40,167,69,0.4);
+  }
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+  }
+  .btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+  }
+  @media (max-width: 768px) {
+    .onboarding-card {
+      padding: 30px 20px;
+    }
+    .btn-group {
+      flex-direction: column;
+    }
+  }
+</style>
+<div class="onboarding-container">
+  <div class="onboarding-card">
+    <h2>👋 Welcome!</h2>
+    <p>Let's make this yours. Upload a profile picture?</p>
+    <form method="POST" enctype="multipart/form-data">
+      <label for="profile_pic" class="upload-area">
+        <i class="fa-solid fa-cloud-arrow-up" style="font-size: 48px; color: #999; margin-bottom: 10px;"></i>
+        <p style="color: #666; margin: 0;">Click to upload photo or drag & drop</p>
+        <small style="color: #999;">JPG, PNG up to 5MB</small>
+        <input type="file" id="profile_pic" name="profile_pic" accept="image/*">
+      </label>
+      <div class="btn-group">
+        <button type="submit" class="btn btn-primary">✅ Set Picture</button>
+        <a href="{{ url_for('profile_bp.onboarding', step='2') }}" class="btn btn-secondary">⏭️ Skip</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

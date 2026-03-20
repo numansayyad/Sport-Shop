@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .review-container {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
+    text-align: center;
+  }
+
+  .review-container h2 {
+    font-size: 28px;
+    color: #27ae60;
+    margin-bottom: 25px;
+  }
+
+  .review-container img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    border: 2px solid #ddd;
+  }
+
+  .review-container p {
+    font-size: 16px;
+    color: #2c3e50;
+    margin: 10px 0;
+  }
+
+  .review-container .total {
+    font-weight: bold;
+    font-size: 20px;
+    color: #e67e22;
+    margin-top: 15px;
+  }
+
+  .review-container .payment-methods {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .review-container .payment-methods a,
+  .review-container button {
+    padding: 12px 35px;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    transition: 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+
+  .online-btn { background: #27ae60; }
+  .online-btn:hover { background: #1e8449; transform: translateY(-2px); }
+
+  .offline-btn { background: #e67e22; }
+  .offline-btn:hover { background: #d35400; transform: translateY(-2px); }
+  .offline-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  @media (max-width: 480px) {
+    .review-container img {
+      width: 90%;
+      height: auto;
+    }
+    .review-container button {
+      width: 100%;
+      padding: 12px 0;
+    }
+  }
+
+  /* Success Modal - Flipkart Style */
+  #cod-success-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+  }
+
+  .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 60px 40px;
+    border-radius: 24px;
+    text-align: center;
+    color: white;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    animation: modalSlideIn 0.4s ease forwards;
+  }
+
+  @keyframes modalSlideIn {
+    to { transform: translate(-50%, -50%) scale(1); }
+  }
+
+  .checkmark {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(20px);
+    position: relative;
+    animation: checkPulse 1.5s ease-in-out;
+  }
+
+  .checkmark::before,
+  .checkmark::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 4px;
+    background: #fff;
+    border-radius: 2px;
+  }
+
+  .checkmark::before {
+    transform: rotate(45deg) translate(10px, 10px);
+    left: 28px;
+    top: 45px;
+    width: 30px;
+  }
+
+  .checkmark::after {
+    transform: rotate(-45deg) translate(12px, -12px);
+    right: 25px;
+    bottom: 35px;
+    width: 40px;
+  }
+
+  @keyframes checkPulse {
+    0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
+    50% { transform: scale(1.1) rotate(180deg); opacity: 1; }
+    100% { transform: scale(1) rotate(360deg); }
+  }
+
+  .modal-title {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .modal-points {
+    font-size: 18px;
+    opacity: 0.9;
+    margin-bottom: 20px;
+  }
+
+  .countdown {
+    font-size: 16px;
+    margin-bottom: 30px;
+    opacity: 0.8;
+  }
+
+  .primary-btn {
+    display: block;
+    margin: 0 auto;
+    padding: 15px 40px;
+    background: rgba(255,255,255,0.95);
+    border: none;
+    color: #333;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .primary-btn:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+  }
+</style>
+
+<div class="review-container">
+  <h2>📝 Confirm Your Order</h2>
+
+  {% if product.main_image %}
+  <img src="{{ url_for('static', filename='uploads/' ~ product.main_image.split('/')[-1]) }}" alt="{{ product.name }}">
+  {% endif %}
+
+  <p><strong>Product Name:</strong> {{ product.name }}</p>
+  <p><strong>Price per Unit:</strong> ₹{{ product.price }}</p>
+  <p><strong>Quantity:</strong> {{ quantity }}</p>
+  <p class="total">Total Amount: ₹{{ total_amount }}</p>
+
+  <form id="order-form" method="POST">
+    <div class="payment-methods">
+      <a href="{{ url_for('order_bp.payment_page', product_id=product._id if product else 'cart', quantity=quantity, total_amount=total_amount) }}" class="online-btn">💳 Pay Online (UPI/Cards)</a>
+      <input type="hidden" id="data-product-id" value="{{ product._id if product else 'cart' }}">
+
+<input type="hidden" id="data-is-cart" value="{{ is_cart or false }}">
+      <input type="hidden" id="data-total" value="{{ total_amount }}">
+      <input type="hidden" id="data-product-name" value="{{ product.name if product else 'Cart Items' }}">
+      <input type="hidden" id="data-quantity" value="{{ quantity if quantity else 1 }}">
+      <input type="hidden" id="data-image" value="{{ url_for('static', filename='uploads/' ~ product.main_image.split('/')[-1]) if product.main_image else '' }}">
+      <button type="submit" name="payment_method" value="offline" class="offline-btn" id="cod-btn">🏪 Pay Offline (COD)</button>
+    </div>
+    <input type="hidden" name="quantity" value="{{ quantity }}">
+  </form>
+</div>
+
+<!-- COD Success Modal -->
+<div id="cod-success-modal">
+  <div class="modal-content">
+    <div class="checkmark" id="checkmark"></div>
+    <div class="modal-title" id="modal-title">Order Placed Successfully! ✅</div>
+    <div id="modal-points"></div>
+    <div class="countdown" id="countdown">Redirecting to Orders in <span id="timer">5</span>s</div>
+    <button class="primary-btn" onclick="goToOrders()">Continue to Orders</button>
+  </div>
+</div>
+
+<script>
+let redirectInterval = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codBtn = document.getElementById('cod-btn');
+  const form = document.getElementById('order-form');
+
+  codBtn.addEventListener('click', async function(e) {
+    e.preventDefault();
+    
+    // Disable button
+    codBtn.disabled = true;
+    codBtn.textContent = 'Processing...';
+
+    // Create FormData
+    const formData = new FormData(form);
+    
+    try {
+      const response = await fetch(window.location.pathname + window.location.search, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Show success modal
+        showSuccessModal(data.total, data.points);
+      } else {
+        alert('Order failed. Please try again.');
+        codBtn.disabled = false;
+        codBtn.textContent = '🏪 Pay Offline (COD)';
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Network error. Please try again.');
+      codBtn.disabled = false;
+      codBtn.textContent = '🏪 Pay Offline (COD)';
+    }
+  });
+});
+
+function showSuccessModal(total, points) {
+  document.getElementById('modal-points').innerHTML = `
+    Total Paid: <strong>₹${total.toFixed(2)}</strong><br>
+    <span style="color: #ffd700;">+${points} Reward Points Earned! 🎉</span>
+  `;
+  
+  document.getElementById('cod-success-modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  
+  // 5 second countdown
+  let timeLeft = 5;
+  const timerEl = document.getElementById('timer');
+  redirectInterval = setInterval(() => {
+    timeLeft--;
+    timerEl.textContent = timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(redirectInterval);
+      window.location.href = '{{ url_for("order_bp.my_orders") }}';
+    }
+  }, 1000);
+}
+
+function goToOrders() {
+  if (redirectInterval) {
+    clearInterval(redirectInterval);
+  }
+  document.getElementById('cod-success-modal').style.display = 'none';
+  document.body.style.overflow = '';
+  window.location.href = '{{ url_for("order_bp.my_orders") }}';
+}
+</script>
+
+<!-- Payment Modal Removed - Using Dedicated Payment Page -->
+
+<!-- JS disabled - Payment page handles flow -->
+{% endblock %}
+</content>
+
