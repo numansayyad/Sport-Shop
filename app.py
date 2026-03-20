@@ -56,7 +56,6 @@ def create_app():
     # --- App Config ---
     app.config["SECRET_KEY"] = "fertilizer123"
 
-    # ❗ IMPORTANT: MongoDB Atlas URL use कर (localhost नाही)
     # app.config["MONGO_URI"] =" mongodb+srv://sayyadnuman154_db_user:<bR6UMmS9bkWn8mAS>@sportcluster.yylsqqr.mongodb.net/?appName=sportCluster"
     app.config["MONGO_URI"] = "mongodb+srv://sayyadnuman154_db_user:bR6UMmS9bkWn8mAS@sportcluster.yylsqqr.mongodb.net/sports_shop"
     # --- Init MongoDB ---
